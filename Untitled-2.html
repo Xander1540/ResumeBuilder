@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .draggable-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .draggable-item {
+      background-color: #f2f2f2;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: move;
+      position: relative;
+    }
+
+    .draggable-item .hamburger {
+      display: inline-block;
+      cursor: move;
+    }
+
+    .draggable-item .edit-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: block;
+    }
+
+    .draggable-item .save-button {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .description {
+      display: none;
+      margin-top: 10px;
+  }
+
+    .toggle-section {
+
+      text-align: center;
+    }
+
+    .save-all-button {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .cm-toggle {
+      -webkit-tap-highlight-color: transparent;
+      top: 10px;
+      right: 80px;
+      position: absolute;
+      border: 0;
+      outline: 0;
+      cursor: pointer;
+      margin: 10px;
+    }
+    
+
+    .cm-toggle:after {
+      content: '';
+      width: 40px;
+      height: 20px;
+      display: inline-block;
+      background: rgba(196, 195, 195, 0.55);
+      border-radius: 10px;
+      clear: both;
+    }
+    
+    .cm-toggle:before {
+      content: '';
+      width: 24px;
+      height: 24px;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: -1px;
+      border-radius: 50%;
+      background: rgb(255, 255, 255);
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .cm-toggle:checked:before {
+      left: 24px;
+      box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .cm-toggle:checked:after {
+      background: #16a085;
+    }
+
+  </style>
+  <script>
+    var draggedItem = null;
+
+    function dragStart(event) {
+      draggedItem = event.target;
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", null);
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      if (draggedItem !== event.target) {
+        var parent = event.target.parentNode;
+        parent.insertBefore(draggedItem, event.target);
+      }
+    }
+
+    function toggleDescription() {
+      var description = document.getElementById('description');
+      description.style.display = (description.style.display === 'none') ? 'block' : 'none';
+    }
+
+    function toggleEdit(sectionId) {
+      var sectionName = document.getElementById('name-' + sectionId);
+      var sectionInput = document.getElementById('input-' + sectionId);
+      var saveButton = document.getElementById('save-' + sectionId);
+
+      sectionName.style.display = (sectionName.style.display === 'none') ? 'inline-block' : 'none';
+      sectionInput.style.display = (sectionInput.style.display === 'none') ? 'inline-block' : 'none';
+      saveButton.style.display = (sectionInput.style.display !== 'none') ? 'block' : 'none';
+
+      if (sectionInput.style.display !== 'none') {
+        sectionInput.focus();
+      }
+    }
+
+    function updateSectionName(sectionId) {
+      var sectionName = document.getElementById('name-' + sectionId);
+      var sectionInput = document.getElementById('input-' + sectionId);
+      var saveButton = document.getElementById('save-' + sectionId);
+
+      sectionName.textContent = sectionInput.value;
+      toggleEdit(sectionId);
+      saveButton.style.display = 'block';
+    }
+
+    function toggleSectionVisibility(sectionId) {
+      var section = document.getElementById('section-' + sectionId);
+      section.style.visibility = (section.style.visibility === 'hidden') ? 'visible' : 'hidden';
+    }
+
+    function saveChanges(sectionId) {
+        var sectionName = document.getElementById('input-' + sectionId);
+        toggleEdit(sectionId);
+        document.getElementById('name-' + sectionId).textContent= sectionName.value;
+       
+      console.log(sectionName);
+    }
+
+    function save() {
+      window.location.href = "response.html";
+    }
+
+
+  </script>
+</head>
+<body>
+  <h1><center>Select your section</center></h1>
+
+  <ul id="section-list" class="draggable-list">
+    <li id="section-1" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section1">Profile Summary</span>
+      <div id="description" class="description">
+        <p>This section is designed to give you an in-depth look into your professional background and personal journey.</p>
+      </div>
+      <input id="input-section1" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section1')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section1" class="save-button" onclick="saveChanges('section1')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section1" class="cm-toggle" onclick="toggleSectionVisibility('section1')" checked>
+      </div>
+    </li>
+    <li id="section-2" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section2">Academic and Cocurricular Achievements</span>
+      <div id="description" class="description">
+        <p> Gain insights into real-world projects, professional growth, and valuable skills acquired through internships. Explore your hands-on journey in various industries.</p>
+      </div>
+      <input id="input-section2" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section2')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section2" class="save-button" onclick="saveChanges('section2')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section2" class="cm-toggle" onclick="toggleSectionVisibility('section2')" checked>
+      </div>
+    </li>
+    <li id="section-3" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section3">Summer Internship Experience</span>
+      <input id="input-section3" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section3')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section3" class="save-button" onclick="saveChanges('section3')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section3" class="cm-toggle" onclick="toggleSectionVisibility('section3')" checked>
+      </div>
+    </li>
+    <li id="section-4" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section4">Work Experience</span>
+      <input id="input-section4" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section4')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section4" class="save-button" onclick="saveChanges('section4')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section4" class="cm-toggle" onclick="toggleSectionVisibility('section4')" checked>
+      </div>
+    </li>
+    <li id="section-5" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section5">Projects</span>
+      <input id="input-section5" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section5')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section5" class="save-button" onclick="saveChanges('section5')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section5" class="cm-toggle" onclick="toggleSectionVisibility('section5')" checked>
+      </div>
+    </li>
+    <li id="section-6" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section6">Certifications</span>
+      <input id="input-section6" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section6')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section6" class="save-button" onclick="saveChanges('section6')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section6" class="cm-toggle" onclick="toggleSectionVisibility('section6')" checked>
+      </div>
+    </li>
+    <li id="section-7" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section7">Leadership Positions</span>
+      <input id="input-section7" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section7')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section7" class="save-button" onclick="saveChanges('section7')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section7" class="cm-toggle" onclick="toggleSectionVisibility('section7')" checked>
+      </div>
+    </li>
+    <li id="section-8" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section8">Extracurricular</span>
+      <input id="input-section8" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section8')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section8" class="save-button" onclick="saveChanges('section8')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section8" class="cm-toggle" onclick="toggleSectionVisibility('section8')" checked>
+      </div>
+    </li>
+    <li id="section-9" class="draggable-item" draggable="true" ondragstart="dragStart(event)">
+      <span class="hamburger">&#9776;</span>
+      <button onclick="toggleDescription()">
+        <i class="icon-info-sign"></i>
+      </button>
+      <span id="name-section9">Education</span>
+      <input id="input-section9" type="text" style="display: none;">
+      <button class="edit-button" onclick="toggleEdit('section9')"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button id="save-section9" class="save-button" onclick="saveChanges('section9')" style="display: none;">Save</button>
+      <div class="toggle-section">
+        <input type="checkbox" id="toggle-section9" class="cm-toggle" onclick="toggleSectionVisibility('section9')" checked>
+      </div>
+    </li>
+  </ul>
+
+  <div class="save-all-button">
+    <button onclick="save()">Save and Next</button>
+  </div>
+
+  <script>
+    var draggableItems = document.getElementsByClassName('draggable-item');
+    Array.from(draggableItems).forEach(function (item) {
+      item.addEventListener('dragover', dragOver);
+      item.addEventListener('drop', drop);
+    });
+  </script>
+
+<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+</body>
+</html>
